@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rotatory_passcode/widgets/input_mode_button.dart';
 import 'package:rotatory_passcode/widgets/passcode/passcode_digits.dart';
+import 'package:rotatory_passcode/widgets/rotaty_dial_painter/constants.dart';
+
+import 'widgets/widgets.dart';
 
 const _animationDuration = Duration(microseconds: 500);
 const _padding = 16.0;
@@ -15,6 +18,7 @@ class PasscodeInputView extends StatefulWidget {
 
 class _PasscodeInputViewState extends State<PasscodeInputView> {
   late final List<PasscodeDigit> _passcodeDigitValues;
+  var _currentInputIndex = 0;
 
   var _simpleInputMode = false;
 
@@ -27,6 +31,15 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
           PasscodeDigit(backgroundColor: Colors.white, fontColor: Colors.white),
       growable: false,
     );
+  }
+
+  void _onDigitSelected(int index) {
+    final digitValue = _passcodeDigitValues[_currentInputIndex];
+    setState(() {
+      _passcodeDigitValues[_currentInputIndex++] = digitValue.copyWith(
+        value: RotaryDialConstants.inputValues[index],
+      );
+    });
   }
 
   void _onModeChanged() => setState(() {
@@ -69,7 +82,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
                 //to define passcodeinput and rotatory input
                 child:
                     _simpleInputMode
-                        ? const PasscodeInput()
+                        ?  PasscodeInput(onDigitSelected: _onDigitSelected,)
                         : const RotaryDialInput(),
               ),
               Align(
