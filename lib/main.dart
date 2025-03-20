@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:rotatory_passcode/passcode_input_view.dart';
 
-void main() {
-  runApp(const MainApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  runApp(const _App());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class _App extends StatelessWidget {
+  const _App();
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      title: 'Flutter Rotary Passcode',
+      theme: Theme.of(
+        context,
+      ).copyWith(textTheme: GoogleFonts.kanitTextTheme()),
+      home: PasscodeInputView(
+        expectedCode: '1234',
+        onSuccess: () {
+          //handle valid passcode
+        },
+        onError: () {
+          //handle invalid passcode
+        },
       ),
     );
   }
