@@ -32,12 +32,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
   @override
   void initState() {
     super.initState();
-    _passcodeDigitValues = List.generate(
-      widget.expectedCode.length,
-      (index) =>
-          PasscodeDigit(backgroundColor: Colors.white, fontColor: Colors.white),
-      growable: false,
-    );
+    _resetDigits();
   }
 
   void _onDigitSelected(int index) {
@@ -48,6 +43,16 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
       );
     });
   }
+
+  void _resetDigits() => setState(() {
+    _currentInputIndex = 0;
+    _passcodeDigitValues = List.generate(
+      widget.expectedCode.length,
+      (index) =>
+          PasscodeDigit(backgroundColor: Colors.white, fontColor: Colors.white),
+      growable: false,
+    );
+  });
 
   void _onModeChanged() => setState(() {
     _simpleInputMode = !_simpleInputMode;
