@@ -80,6 +80,17 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
       );
       widget.onSuccess();
     } else {
+      await _changePasscodeDigitColors(
+        backgroundColor: Colors.red,
+        fontColor: Colors.white,
+        interval: interval,
+      );
+      await Future.delayed(const Duration(seconds: 1));
+      await _changePasscodeDigitColors(
+        backgroundColor: Colors.white,
+        fontColor: Colors.white,
+        interval: interval,
+      );
       widget.onError();
     }
     await Future.delayed(_animationDuration);
