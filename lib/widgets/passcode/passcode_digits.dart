@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:local_hero/local_hero.dart';
+import 'package:rotatory_passcode/utils.dart';
 
 const _passcodeDigitPadding = 8.0;
 const _passcodeDigitSizeBig = 36.0;
@@ -47,8 +48,25 @@ class PasscodeDigits extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           for (var i = 0; i < passcodeDigitsValues.length; i++)
-            LocalHero(tag: 'passcode_digit_$i', child: Center()),
-        ],
+            LocalHero(
+              tag: 'passcode_digit_$i',
+              child: _PasswordDigitContainer(
+                animationDuration: animationDuration,
+                backgroundColor: passcodeDigitsValues[i].backgroundColor,
+                fontColor: passcodeDigitsValues[i].fontColor,
+                digit: passcodeDigitsValues[i].value,
+                size:
+                    simpleInputMode
+                        ? _passcodeDigitSizeBig
+                        : _passcodeDigitSizeSmall,
+              ),
+            ),
+        ].addBetween(
+          SizedBox(
+            width:
+                simpleInputMode ? _passcodeDigitGapBig : _passcodeDigitGapSmall,
+          ),
+        ),
       ),
     );
   }
@@ -70,6 +88,20 @@ class _PasswordDigitContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final digitContainerSize = size - _passcodeDigitPadding;
+    final containerSize = digit != null ? digitContainerSize : 0.0;
+    return Container(
+      height: size,
+      width: size,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(
+        color: Colors.black,
+        shape: BoxShape.circle,
+      ),
+      child: AnimatedContainer(
+        duration: animationDuration,
+        height: containerSize,
+      ),
+    );
   }
 }
