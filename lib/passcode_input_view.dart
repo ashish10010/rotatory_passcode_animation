@@ -10,7 +10,14 @@ const _padding = 16.0;
 
 class PasscodeInputView extends StatefulWidget {
   final String expectedCode;
-  const PasscodeInputView({required this.expectedCode, super.key});
+  final VoidCallback onSuccess;
+  final VoidCallback onError;
+  const PasscodeInputView({
+    required this.expectedCode,
+    required this.onSuccess,
+    required this.onError,
+    super.key,
+  });
 
   @override
   State<PasscodeInputView> createState() => _PasscodeInputViewState();
@@ -82,7 +89,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
                 //to define passcodeinput and rotatory input
                 child:
                     _simpleInputMode
-                        ?  PasscodeInput(onDigitSelected: _onDigitSelected,)
+                        ? PasscodeInput(onDigitSelected: _onDigitSelected)
                         : const RotaryDialInput(),
               ),
               Align(
