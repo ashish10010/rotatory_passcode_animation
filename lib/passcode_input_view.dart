@@ -29,6 +29,10 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
 
   var _simpleInputMode = false;
 
+  var _passcodeAnimationInProgress = false;
+
+  bool get _isAnimating => _passcodeAnimationInProgress;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +40,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
   }
 
   void _onDigitSelected(int index) {
+    if (_isAnimating) return;
     final digitValue = _passcodeDigitValues[_currentInputIndex];
     setState(() {
       _passcodeDigitValues[_currentInputIndex++] = digitValue.copyWith(
@@ -55,23 +60,59 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
     );
   });
 
-  void _validatePasscode() {
+  Future<void> _validatePasscode() async {
+    if (_isAnimating) return;
     final expectedCode = widget.expectedCode;
 
     if (_currentInputIndex != expectedCode.length) return;
 
+    final interval = _animationDuration.inMilliseconds ~/ expectedCode.length;
     final codeInput = _passcodeDigitValues.fold<String>(
       '',
       (code, element) => code += element.value?.toString() ?? '',
     );
-
+    _togglePasscodeAnimation();
     if (codeInput == expectedCode) {
+      await _changePasscodeDigitColors(
+        backgroundColor: Colors.green,
+        fontColor: Colors.transparent,
+        interval: interval,
+      );
       widget.onSuccess();
     } else {
       widget.onError();
     }
+    await Future.delayed(_animationDuration);
     _resetDigits();
+    _togglePasscodeAnimation();
   }
+
+  Future<void> _changePasscodeDigitColors({
+    Color? backgroundColor,
+    Color? fontColor,
+    int interval = 0,
+  }) async {
+    for (var i = 0; i < _passcodeDigitValues.length; i++) {
+      await Future.delayed(Duration(microseconds: interval));
+
+      setState(() {
+        if (backgroundColor != null) {
+          _passcodeDigitValues[i] = _passcodeDigitValues[i].copyWith(
+            backgroundColor: backgroundColor,
+          );
+        }
+        if (fontColor != null) {
+          _passcodeDigitValues[i] = _passcodeDigitValues[i].copyWith(
+            fontColor: fontColor,
+          );
+        }
+      });
+    }
+  }
+
+  void _togglePasscodeAnimation() => setState(
+    () => _passcodeAnimationInProgress = !_passcodeAnimationInProgress,
+  );
 
   void _onModeChanged() => setState(() {
     _simpleInputMode = !_simpleInputMode;
