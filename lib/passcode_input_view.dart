@@ -42,6 +42,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
         value: RotaryDialConstants.inputValues[index],
       );
     });
+    _validatePasscode();
   }
 
   void _resetDigits() => setState(() {
@@ -53,6 +54,24 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
       growable: false,
     );
   });
+
+  void _validatePasscode() {
+    final expectedCode = widget.expectedCode;
+
+    if (_currentInputIndex != expectedCode.length) return;
+
+    final codeInput = _passcodeDigitValues.fold<String>(
+      '',
+      (code, element) => code += element.value?.toString() ?? '',
+    );
+
+    if (codeInput == expectedCode) {
+      widget.onSuccess();
+    } else {
+      widget.onError();
+    }
+    _resetDigits();
+  }
 
   void _onModeChanged() => setState(() {
     _simpleInputMode = !_simpleInputMode;
