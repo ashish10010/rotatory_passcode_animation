@@ -13,10 +13,26 @@ class InputModeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return AnimatedCrossFade(
+      firstChild: _Button(label: 'Original', onTap: onModeChanged),
+      secondChild: _Button(label: 'Simplify', onTap: onModeChanged),
+      crossFadeState: simpleInputMode ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+      duration: animationDuration,
+    );
+  }
+}
+
+class _Button extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _Button({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onModeChanged,
+      onTap: onTap,
       child: Text(
-        (simpleInputMode ? 'Original' : 'Simplify').toUpperCase(),
+        label.toUpperCase(),
         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.bold,
