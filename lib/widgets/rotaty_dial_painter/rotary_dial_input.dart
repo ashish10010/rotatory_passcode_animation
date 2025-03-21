@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:rotatory_passcode/utils.dart';
 import 'package:rotatory_passcode/widgets/widgets.dart';
 
@@ -32,7 +33,20 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
     _currentDragOffset = details.localPosition - centerOffset;
   }
 
-  void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {}
+  void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {
+    final previousOffset = _currentDragOffset;
+    _currentDragOffset += details.delta;
+
+    final currentDirection = _currentDragOffset.direction;
+    final previousDirection = previousOffset.direction;
+
+    if (currentDirection * previousDirection < 0.0) return;
+    final angle = _startAngleOffset + currentDirection - previousDirection;
+
+    if (angle < 0.0 || angle >= RotaryDialConstants.maxRotaryRingAngle) return;
+
+    setState(() => _startAngleOffset = angle);
+  }
 
   void _onPanEnd(DragEndDetails details) {}
 
