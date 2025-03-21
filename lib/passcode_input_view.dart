@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:local_hero/local_hero.dart';
 
 import 'widgets/widgets.dart';
 
@@ -157,53 +158,57 @@ class _PasscodeInputViewState extends State<PasscodeInputView>
             _padding,
             _padding * 2,
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Enter\npasscode'.toUpperCase(),
-                style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+          child: LocalHeroScope(
+            curve: Curves.easeInOut,
+            duration: _animationDuration,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Enter\npasscode'.toUpperCase(),
+                  style: Theme.of(context).textTheme.displaySmall?.copyWith(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 32.0),
-              Align(
-                alignment:
-                    _simpleInputMode ? Alignment.center : Alignment.centerRight,
-                child: PasscodeDigits(
-                  animationDuration: _animationDuration,
-                  passcodeDigitsValues: _passcodeDigitValues,
-                  simpleInputMode: _simpleInputMode,
+                const SizedBox(height: 32.0),
+                Align(
+                  alignment:
+                      _simpleInputMode ? Alignment.center : Alignment.centerRight,
+                  child: PasscodeDigits(
+                    animationDuration: _animationDuration,
+                    passcodeDigitsValues: _passcodeDigitValues,
+                    simpleInputMode: _simpleInputMode,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              Expanded(
-                //to define passcodeinput and rotatory input
-                child:
-                    _simpleInputMode
-                        ? PasscodeInput(
-                          onDigitSelected:
-                              (index) =>
-                                  _onDigitSelected(index, autoValidate: true),
-                        )
-                        : RotaryDialInput(
-                          animationDuration: _animationDuration,
-                          modeChangeController: _modeChangeController,
-                          passcodeAnimationInProgress: _passcodeAnimationInProgress,
-                          onDigitSelected: _onDigitSelected,
-                          onValidatePasscode: _validatePasscode,
-                        ),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: InputModeButton(
-                  animationDuration: _animationDuration,
-                  simpleInputMode: _simpleInputMode,
-                  onModeChanged: _onModeChanged,
+                const SizedBox(height: 16.0),
+                Expanded(
+                  //to define passcodeinput and rotatory input
+                  child:
+                      _simpleInputMode
+                          ? PasscodeInput(
+                            onDigitSelected:
+                                (index) =>
+                                    _onDigitSelected(index, autoValidate: true),
+                          )
+                          : RotaryDialInput(
+                            animationDuration: _animationDuration,
+                            modeChangeController: _modeChangeController,
+                            passcodeAnimationInProgress: _passcodeAnimationInProgress,
+                            onDigitSelected: _onDigitSelected,
+                            onValidatePasscode: _validatePasscode,
+                          ),
                 ),
-              ),
-            ],
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: InputModeButton(
+                    animationDuration: _animationDuration,
+                    simpleInputMode: _simpleInputMode,
+                    onModeChanged: _onModeChanged,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
