@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:rotatory_passcode/utils.dart';
 import 'package:rotatory_passcode/widgets/widgets.dart';
 
 class RotaryDialInput extends StatefulWidget {
@@ -27,7 +28,9 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
     });
   }
 
-  void _onPanStart(DragStartDetails details, Offset centerOffset) {}
+  void _onPanStart(DragStartDetails details, Offset centerOffset) {
+    _currentDragOffset = details.localPosition - centerOffset;
+  }
 
   void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {}
 
@@ -40,6 +43,7 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
       builder: (context, constraints) {
         final width = constraints.maxWidth;
         final size = Size(width, width);
+        final centerOffset = size.centerOffset;
         final dialNumberDistanceFromCenter =
             width / 2 -
             16.0 -
