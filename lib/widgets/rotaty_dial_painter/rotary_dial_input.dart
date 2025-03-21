@@ -7,9 +7,11 @@ import 'package:rotatory_passcode/utils.dart';
 import 'package:rotatory_passcode/widgets/widgets.dart';
 
 class RotaryDialInput extends StatefulWidget {
+  final Duration animationDuration;
   final ValueSetter<int> onDigitSelected;
   final AsyncCallback onValidatePasscode;
   const RotaryDialInput({
+    required this.animationDuration,
     required this.onDigitSelected,
     required this.onValidatePasscode,
     super.key,
@@ -19,21 +21,59 @@ class RotaryDialInput extends StatefulWidget {
   State<RotaryDialInput> createState() => _RotaryDialInputState();
 }
 
-class _RotaryDialInputState extends State<RotaryDialInput> {
+class _RotaryDialInputState extends State<RotaryDialInput>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _dialController;
+
+  late Animation<double> _rotationAnimation;
   var _currentDragOffset = Offset.zero;
   var _startAngleOffset = 0.0;
 
-  void _rotateDialToStart() {
-    setState(() {
-      _startAngleOffset = 0.0;
-    });
+  bool get _isAnimating => _dialController.isAnimating;
+
+  @override
+  void initState() {
+    super.initState();
+    _dialController = AnimationController(
+      duration: widget.animationDuration,
+      vsync: this,
+    )..addListener(
+      () => setState(() => _startAngleOffset = _rotationAnimation.value),
+    );
   }
 
+  @override
+  void dispose() {
+    _dialController.dispose();
+    super.dispose();
+  }
+
+  TickerFuture _rotateDialToStart() {
+    _rotationAnimation = Tween<double>(
+      begin: _startAngleOffset,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(parent: _dialController, curve: Curves.easeInOut),
+    );
+
+    _dialController.reset();
+
+    return _dialController.forward();
+  }
+
+  // void _rotateDialToStart() {
+  //   setState(() {
+  //     _startAngleOffset = 0.0;
+  //   });
+  // }
+
   void _onPanStart(DragStartDetails details, Offset centerOffset) {
+    if (_isAnimating) return;
     _currentDragOffset = details.localPosition - centerOffset;
   }
 
   void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {
+    if (_isAnimating) return;
     final previousOffset = _currentDragOffset;
     _currentDragOffset += details.delta;
 
@@ -49,6 +89,7 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
   }
 
   void _onPanEnd(DragEndDetails details) {
+    if (_isAnimating) return;
     final offset =
         RotaryDialConstants.firstDialNumberPosition * (_startAngleOffset - 1);
     if (offset < -math.pi / 12) {
@@ -61,7 +102,7 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
 
   void _addDigit(int index) {
     widget.onDigitSelected(index);
-    _rotateDialToStart();
+    _rotateDialToStart().then((_) async => await widget.onValidatePasscode());
   }
 
   @override

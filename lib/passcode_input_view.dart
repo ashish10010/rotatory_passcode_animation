@@ -36,7 +36,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
     _resetDigits();
   }
 
-  void _onDigitSelected(int index) {
+  void _onDigitSelected(int index, {bool autoValidate = false}) {
     if (_isAnimating) return;
     final digitValue = _passcodeDigitValues[_currentInputIndex];
     setState(() {
@@ -44,7 +44,7 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
         value: RotaryDialConstants.inputValues[index],
       );
     });
-    _validatePasscode();
+    if (autoValidate) _validatePasscode();
   }
 
   void _resetDigits() => setState(() {
@@ -162,8 +162,13 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
                 //to define passcodeinput and rotatory input
                 child:
                     _simpleInputMode
-                        ? PasscodeInput(onDigitSelected: _onDigitSelected)
-                        :  RotaryDialInput(
+                        ? PasscodeInput(
+                          onDigitSelected:
+                              (index) =>
+                                  _onDigitSelected(index, autoValidate: true),
+                        )
+                        : RotaryDialInput(
+                          animationDuration: _animationDuration,
                           onDigitSelected: _onDigitSelected,
                           onValidatePasscode: _validatePasscode,
                         ),
