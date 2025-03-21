@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rotatory_passcode/widgets/input_mode_button.dart';
-import 'package:rotatory_passcode/widgets/passcode/passcode_digits.dart';
-import 'package:rotatory_passcode/widgets/rotaty_dial_painter/constants.dart';
 
 import 'widgets/widgets.dart';
 
@@ -166,7 +163,10 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
                 child:
                     _simpleInputMode
                         ? PasscodeInput(onDigitSelected: _onDigitSelected)
-                        : const RotaryDialInput(),
+                        :  RotaryDialInput(
+                          onDigitSelected: _onDigitSelected,
+                          onValidatePasscode: _validatePasscode,
+                        ),
               ),
               Align(
                 alignment: Alignment.centerRight,
