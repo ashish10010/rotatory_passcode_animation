@@ -27,6 +27,12 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
     });
   }
 
+  void _onPanStart(DragStartDetails details, Offset centerOffset) {}
+
+  void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {}
+
+  void _onPanEnd(DragEndDetails details) {}
+
   @override
   Widget build(BuildContext context) {
     const inputValues = RotaryDialConstants.inputValues;
@@ -54,11 +60,17 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
                 ),
                 child: DialNumber(number: inputValues[i]),
               ),
-            CustomPaint(
-              size: size,
-              painter: RotaryDialForegroundPainter(
-                numberRadiusFromCenter: dialNumberDistanceFromCenter,
-                startAngleOffset: _startAngleOffset,
+            GestureDetector(
+              onPanStart: (detials) => _onPanStart(detials, centerOffset),
+              onPanUpdate: (detials) => _onPanUpdate(detials, centerOffset),
+
+              onPanEnd: _onPanEnd,
+              child: CustomPaint(
+                size: size,
+                painter: RotaryDialForegroundPainter(
+                  numberRadiusFromCenter: dialNumberDistanceFromCenter,
+                  startAngleOffset: _startAngleOffset,
+                ),
               ),
             ),
           ],
