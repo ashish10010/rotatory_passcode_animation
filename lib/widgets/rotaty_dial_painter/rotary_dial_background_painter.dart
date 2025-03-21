@@ -6,18 +6,19 @@ import 'package:rotatory_passcode/widgets/widgets.dart';
 import '../../utils.dart';
 
 class RotaryDialBackgroundPainter extends CustomPainter {
-  const RotaryDialBackgroundPainter({required this.opacity});
+  const RotaryDialBackgroundPainter({
+    required this.opacity,
+  });
 
   final double opacity;
 
   @override
   void paint(Canvas canvas, Size size) {
     const ringWidth = RotaryDialConstants.rotaryRingWidth;
-    final paint =
-        Paint()
-          ..color =  Color.fromRGBO(0, 0, 0, opacity)
-          ..strokeWidth = ringWidth
-          ..style = PaintingStyle.stroke;
+    final paint = Paint()
+      ..color = const Color.fromRGBO(0, 0, 0, 1.0)
+      ..strokeWidth = ringWidth
+      ..style = PaintingStyle.stroke;
 
     canvas.drawArc(
       Rect.fromCircle(
