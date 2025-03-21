@@ -48,7 +48,21 @@ class _RotaryDialInputState extends State<RotaryDialInput> {
     setState(() => _startAngleOffset = angle);
   }
 
-  void _onPanEnd(DragEndDetails details) {}
+  void _onPanEnd(DragEndDetails details) {
+    final offset =
+        RotaryDialConstants.firstDialNumberPosition * (_startAngleOffset - 1);
+    if (offset < -math.pi / 12) {
+      _rotateDialToStart();
+      return;
+    }
+    final numberIndex = ((offset * 180 / math.pi).abs() / 30).round();
+    _addDigit(numberIndex);
+  }
+
+  void _addDigit(int index) {
+    widget.onDigitSelected(index);
+    _rotateDialToStart();
+  }
 
   @override
   Widget build(BuildContext context) {
