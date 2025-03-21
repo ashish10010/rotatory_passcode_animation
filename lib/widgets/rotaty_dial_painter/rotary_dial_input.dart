@@ -20,6 +20,13 @@ class RotaryDialInput extends StatefulWidget {
 class _RotaryDialInputState extends State<RotaryDialInput> {
   var _currentDragOffset = Offset.zero;
   var _startAngleOffset = 0.0;
+
+  void _rotateDialToStart() {
+    setState(() {
+      _startAngleOffset = 0.0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     const inputValues = RotaryDialConstants.inputValues;

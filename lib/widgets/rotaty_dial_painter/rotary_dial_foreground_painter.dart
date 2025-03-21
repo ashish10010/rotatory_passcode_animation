@@ -13,7 +13,9 @@ class RotaryDialForegroundPainter extends CustomPainter {
   });
   @override
   void paint(Canvas canvas, Size size) {
+    const firstDialNumberPosition = RotaryDialConstants.firstDialNumberPosition;
     const ringWidth = RotaryDialConstants.rotaryRingWidth;
+    final angleOffset = startAngleOffset * firstDialNumberPosition;
 
     final paint =
         Paint()
@@ -30,14 +32,14 @@ class RotaryDialForegroundPainter extends CustomPainter {
           width: size.width - ringWidth, //diameter = 2 * radius
           height: size.width - ringWidth,
         ),
-        RotaryDialConstants.firstDialNumberPosition,
+        angleOffset + firstDialNumberPosition,
         RotaryDialConstants.maxRotaryRingSweepAngle,
         false,
         paint,
       );
     for (int i = 0; i < 10; i++) {
       final offset = Offset.fromDirection(
-        math.pi * (-30 - i * 30) / 180,
+        angleOffset + math.pi * (-30 - i * 30) / 180,
         numberRadiusFromCenter,
       );
       canvas.drawCircle(
