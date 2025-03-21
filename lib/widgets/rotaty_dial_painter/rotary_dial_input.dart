@@ -143,7 +143,9 @@ class _RotaryDialInputState extends State<RotaryDialInput>
           children: [
             CustomPaint(
               size: size,
-              painter: const RotaryDialBackgroundPainter(), //todo,
+              painter: RotaryDialBackgroundPainter(
+                opacity: _rotaryDialBackgroundAnimation.value,
+              ), //todo,
             ),
             for (var i = 0; i < inputValues.length; i++)
               Transform.translate(
