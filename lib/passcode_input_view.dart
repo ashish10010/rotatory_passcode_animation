@@ -20,7 +20,9 @@ class PasscodeInputView extends StatefulWidget {
   State<PasscodeInputView> createState() => _PasscodeInputViewState();
 }
 
-class _PasscodeInputViewState extends State<PasscodeInputView> {
+class _PasscodeInputViewState extends State<PasscodeInputView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _modeChangeController;
   late final List<PasscodeDigit> _passcodeDigitValues;
   var _currentInputIndex = 0;
 
@@ -28,12 +30,21 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
 
   var _passcodeAnimationInProgress = false;
 
-  bool get _isAnimating => _passcodeAnimationInProgress;
+  bool get _isAnimating =>
+      _modeChangeController.isAnimating || _passcodeAnimationInProgress;
 
   @override
   void initState() {
     super.initState();
+    _modeChangeController = AnimationController(vsync: this)
+      ..addListener(() => setState(() {}));
     _resetDigits();
+  }
+
+  @override
+  void dispose() {
+    _modeChangeController.dispose();
+    super.dispose();
   }
 
   void _onDigitSelected(int index, {bool autoValidate = false}) {
@@ -122,7 +133,16 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
     () => _passcodeAnimationInProgress = !_passcodeAnimationInProgress,
   );
 
-  void _onModeChanged() => setState(() {
+  void _onModeChanged() {
+    if (_modeChangeController.isCompleted) {
+      _changeInputMode();
+      Future.delayed(_animationDuration, () => _modeChangeController.reverse());
+    } else {
+      _modeChangeController.forward().then((_) => _changeInputMode());
+    }
+  }
+
+  void _changeInputMode() => setState(() {
     _simpleInputMode = !_simpleInputMode;
   });
 
@@ -169,6 +189,8 @@ class _PasscodeInputViewState extends State<PasscodeInputView> {
                         )
                         : RotaryDialInput(
                           animationDuration: _animationDuration,
+                          modeChangeController: _modeChangeController,
+                          passcodeAnimationInProgress: _passcodeAnimationInProgress,
                           onDigitSelected: _onDigitSelected,
                           onValidatePasscode: _validatePasscode,
                         ),

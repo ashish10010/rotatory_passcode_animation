@@ -8,9 +8,13 @@ import 'package:rotatory_passcode/widgets/widgets.dart';
 
 class RotaryDialInput extends StatefulWidget {
   final Duration animationDuration;
+  final AnimationController modeChangeController;
+  final bool passcodeAnimationInProgress;
   final ValueSetter<int> onDigitSelected;
   final AsyncCallback onValidatePasscode;
   const RotaryDialInput({
+    required this.modeChangeController,
+    required this.passcodeAnimationInProgress,
     required this.animationDuration,
     required this.onDigitSelected,
     required this.onValidatePasscode,
@@ -26,10 +30,16 @@ class _RotaryDialInputState extends State<RotaryDialInput>
   late final AnimationController _dialController;
 
   late Animation<double> _rotationAnimation;
+  late Animation<double> _rotaryDialForegroundAnimation;
+  late Animation<double> _rotaryDialBackgroundAnimation;
+
   var _currentDragOffset = Offset.zero;
   var _startAngleOffset = 0.0;
 
-  bool get _isAnimating => _dialController.isAnimating;
+  bool get _isAnimating =>
+      _dialController.isAnimating ||
+      widget.modeChangeController.isAnimating ||
+      widget.passcodeAnimationInProgress;
 
   @override
   void initState() {
@@ -39,6 +49,16 @@ class _RotaryDialInputState extends State<RotaryDialInput>
       vsync: this,
     )..addListener(
       () => setState(() => _startAngleOffset = _rotationAnimation.value),
+    );
+
+    _rotaryDialForegroundAnimation = Tween<double>(
+      begin: RotaryDialConstants.maxRotaryRingSweepAngle,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: widget.modeChangeController,
+        curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+      ),
     );
   }
 
@@ -143,6 +163,7 @@ class _RotaryDialInputState extends State<RotaryDialInput>
                 painter: RotaryDialForegroundPainter(
                   numberRadiusFromCenter: dialNumberDistanceFromCenter,
                   startAngleOffset: _startAngleOffset,
+                  sweepAngle: _rotaryDialForegroundAnimation.value,
                 ),
               ),
             ),

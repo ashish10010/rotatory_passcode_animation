@@ -6,10 +6,12 @@ import 'package:rotatory_passcode/widgets/rotaty_dial_painter/constants.dart';
 class RotaryDialForegroundPainter extends CustomPainter {
   final double numberRadiusFromCenter;
   final double startAngleOffset;
+  final double sweepAngle;
 
   const RotaryDialForegroundPainter({
     required this.numberRadiusFromCenter,
     required this.startAngleOffset,
+    required this.sweepAngle,
   });
   @override
   void paint(Canvas canvas, Size size) {
@@ -33,7 +35,7 @@ class RotaryDialForegroundPainter extends CustomPainter {
           height: size.width - ringWidth,
         ),
         angleOffset + firstDialNumberPosition,
-        RotaryDialConstants.maxRotaryRingSweepAngle,
+        sweepAngle,
         false,
         paint,
       );
@@ -53,7 +55,7 @@ class RotaryDialForegroundPainter extends CustomPainter {
       size.centerOffset +
           Offset.fromDirection(math.pi / 6, numberRadiusFromCenter),
       ringWidth / 6,
-      Paint()..color = const Color.fromRGBO(255, 255, 255, 1.0),
+      Paint()..color =  Color.fromRGBO(255, 255, 255, sweepAngle/ RotaryDialConstants.maxRotaryRingSweepAngle),
     );
     canvas.restore();
   }
@@ -61,5 +63,6 @@ class RotaryDialForegroundPainter extends CustomPainter {
   @override
   bool shouldRepaint(RotaryDialForegroundPainter oldDelegate) =>
       oldDelegate.numberRadiusFromCenter != numberRadiusFromCenter &&
-      oldDelegate.startAngleOffset != startAngleOffset;
+      oldDelegate.startAngleOffset != startAngleOffset &&
+      oldDelegate.sweepAngle != sweepAngle;
 }
