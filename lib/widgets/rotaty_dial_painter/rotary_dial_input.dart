@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:rotatory_passcode/utils.dart';
 import 'package:rotatory_passcode/widgets/widgets.dart';
 
@@ -143,7 +142,9 @@ class _RotaryDialInputState extends State<RotaryDialInput>
           children: [
             CustomPaint(
               size: size,
-              painter: const RotaryDialBackgroundPainter(), //todo,
+              painter: RotaryDialBackgroundPainter(
+                opacity: _rotaryDialBackgroundAnimation.value,
+              ), //todo,
             ),
             for (var i = 0; i < inputValues.length; i++)
               Transform.translate(
