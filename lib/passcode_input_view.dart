@@ -174,7 +174,9 @@ class _PasscodeInputViewState extends State<PasscodeInputView>
                 const SizedBox(height: 32.0),
                 Align(
                   alignment:
-                      _simpleInputMode ? Alignment.center : Alignment.centerRight,
+                      _simpleInputMode
+                          ? Alignment.center
+                          : Alignment.centerRight,
                   child: PasscodeDigits(
                     animationDuration: _animationDuration,
                     passcodeDigitsValues: _passcodeDigitValues,
@@ -192,9 +194,11 @@ class _PasscodeInputViewState extends State<PasscodeInputView>
                                     _onDigitSelected(index, autoValidate: true),
                           )
                           : RotaryDialInput(
+                            pagePadding: _padding,
                             animationDuration: _animationDuration,
                             modeChangeController: _modeChangeController,
-                            passcodeAnimationInProgress: _passcodeAnimationInProgress,
+                            passcodeAnimationInProgress:
+                                _passcodeAnimationInProgress,
                             onDigitSelected: _onDigitSelected,
                             onValidatePasscode: _validatePasscode,
                           ),

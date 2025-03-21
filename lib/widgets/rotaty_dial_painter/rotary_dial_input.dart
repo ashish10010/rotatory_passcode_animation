@@ -1,24 +1,28 @@
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:rotatory_passcode/utils.dart';
-import 'package:rotatory_passcode/widgets/widgets.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../utils.dart';
+import '../widgets.dart';
 
 class RotaryDialInput extends StatefulWidget {
-  final Duration animationDuration;
-  final AnimationController modeChangeController;
-  final bool passcodeAnimationInProgress;
-  final ValueSetter<int> onDigitSelected;
-  final AsyncCallback onValidatePasscode;
   const RotaryDialInput({
-    required this.modeChangeController,
-    required this.passcodeAnimationInProgress,
     required this.animationDuration,
+    required this.modeChangeController,
+    required this.pagePadding,
+    required this.passcodeAnimationInProgress,
     required this.onDigitSelected,
     required this.onValidatePasscode,
     super.key,
   });
+
+  final Duration animationDuration;
+  final AnimationController modeChangeController;
+  final double pagePadding;
+  final bool passcodeAnimationInProgress;
+  final ValueSetter<int> onDigitSelected;
+  final AsyncCallback onValidatePasscode;
 
   @override
   State<RotaryDialInput> createState() => _RotaryDialInputState();
@@ -43,6 +47,7 @@ class _RotaryDialInputState extends State<RotaryDialInput>
   @override
   void initState() {
     super.initState();
+
     _dialController = AnimationController(
       duration: widget.animationDuration,
       vsync: this,
@@ -57,6 +62,16 @@ class _RotaryDialInputState extends State<RotaryDialInput>
       CurvedAnimation(
         parent: widget.modeChangeController,
         curve: const Interval(0.0, 0.5, curve: Curves.easeInOut),
+      ),
+    );
+
+    _rotaryDialBackgroundAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(
+      CurvedAnimation(
+        parent: widget.modeChangeController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
       ),
     );
   }
@@ -80,19 +95,15 @@ class _RotaryDialInputState extends State<RotaryDialInput>
     return _dialController.forward();
   }
 
-  // void _rotateDialToStart() {
-  //   setState(() {
-  //     _startAngleOffset = 0.0;
-  //   });
-  // }
-
   void _onPanStart(DragStartDetails details, Offset centerOffset) {
     if (_isAnimating) return;
+
     _currentDragOffset = details.localPosition - centerOffset;
   }
 
   void _onPanUpdate(DragUpdateDetails details, Offset centerOffset) {
     if (_isAnimating) return;
+
     final previousOffset = _currentDragOffset;
     _currentDragOffset += details.delta;
 
@@ -100,6 +111,7 @@ class _RotaryDialInputState extends State<RotaryDialInput>
     final previousDirection = previousOffset.direction;
 
     if (currentDirection * previousDirection < 0.0) return;
+
     final angle = _startAngleOffset + currentDirection - previousDirection;
 
     if (angle < 0.0 || angle >= RotaryDialConstants.maxRotaryRingAngle) return;
@@ -109,24 +121,31 @@ class _RotaryDialInputState extends State<RotaryDialInput>
 
   void _onPanEnd(DragEndDetails details) {
     if (_isAnimating) return;
+
     final offset =
         RotaryDialConstants.firstDialNumberPosition * (_startAngleOffset - 1);
+
     if (offset < -math.pi / 12) {
       _rotateDialToStart();
+
       return;
     }
+
     final numberIndex = ((offset * 180 / math.pi).abs() / 30).round();
+
     _addDigit(numberIndex);
   }
 
   void _addDigit(int index) {
     widget.onDigitSelected(index);
+
     _rotateDialToStart().then((_) async => await widget.onValidatePasscode());
   }
 
   @override
   Widget build(BuildContext context) {
     const inputValues = RotaryDialConstants.inputValues;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -134,9 +153,10 @@ class _RotaryDialInputState extends State<RotaryDialInput>
         final centerOffset = size.centerOffset;
         final dialNumberDistanceFromCenter =
             width / 2 -
-            16.0 -
-            RotaryDialConstants.rotaryRingPadding -
-            RotaryDialConstants.dialNumberPadding;
+            widget.pagePadding -
+            RotaryDialConstants.rotaryRingPadding * 2 -
+            RotaryDialConstants.dialNumberPadding * 2;
+
         return Stack(
           alignment: Alignment.center,
           children: [
@@ -144,7 +164,7 @@ class _RotaryDialInputState extends State<RotaryDialInput>
               size: size,
               painter: RotaryDialBackgroundPainter(
                 opacity: _rotaryDialBackgroundAnimation.value,
-              ), //todo,
+              ),
             ),
             for (var i = 0; i < inputValues.length; i++)
               Transform.translate(
@@ -155,9 +175,8 @@ class _RotaryDialInputState extends State<RotaryDialInput>
                 child: DialNumber(number: inputValues[i]),
               ),
             GestureDetector(
-              onPanStart: (detials) => _onPanStart(detials, centerOffset),
-              onPanUpdate: (detials) => _onPanUpdate(detials, centerOffset),
-
+              onPanStart: (details) => _onPanStart(details, centerOffset),
+              onPanUpdate: (details) => _onPanUpdate(details, centerOffset),
               onPanEnd: _onPanEnd,
               child: CustomPaint(
                 size: size,
